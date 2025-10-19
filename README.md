@@ -1,12 +1,12 @@
 # 🌾 **AgroTrace**  
-### _Blockchain-Based Supply Chain Transparency for Agricultural Produce_
+### _Blockchain-Based Supply Chain Transparency for Agricultural Produce_ 
 
 ![Built with Solidity](https://img.shields.io/badge/Built%20with-Solidity-363636.svg?logo=ethereum)
 ![Frontend](https://img.shields.io/badge/Frontend-HTML%2C%20CSS%2C%20JavaScript-blue.svg)
 ![Blockchain](https://img.shields.io/badge/Blockchain-Ethereum%20%7C%20Hardhat%20%7C%20MetaMask-purple.svg)
 ![Hackathon](https://img.shields.io/badge/Event-Hackathon%206.0%20Version%20-orange.svg)
 
-
+Documentation - https://docs.google.com/document/d/1HE99jMUrNg39NhvZCS5nE1CZdynLnT3b7KTrm1Jc7-U/edit?usp=sharing
 ---
 
 ## 🌍 **Overview**
