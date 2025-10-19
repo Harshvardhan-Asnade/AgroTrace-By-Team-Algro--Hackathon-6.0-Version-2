@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumer - AgriTrace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md">
+    <div class="max-w-6xl mx-auto flex justify-between items-center p-4">
+      <h1 class="text-xl font-bold text-green-600">👁 Consumer View</h1>
+      <nav class="space-x-6 text-gray-700">
+        <a href="#" class="hover:text-green-600">Dashboard</a>
+        <a href="#" class="hover:text-green-600">Trace History</a>
+        <a href="#" class="hover:text-green-600">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-3xl mx-auto p-6">
+    <div class="bg-white p-6 rounded-2xl shadow-md">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-2">Check Produce Details</h2>
+      <p class="text-gray-600 mb-6">Enter a Produce ID to view its blockchain-verified details.</p>
+
+      <!-- Input + Button -->
+      <div class="flex gap-3">
+        <input id="prodId" type="text" placeholder="e.g., 101" 
+               class="flex-grow border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
+        <button onclick="viewProduce()" id="viewBtn"
+                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+          View Produce
+        </button>
+      </div>
+
+      <!-- Alerts -->
+      <div id="alertBox" class="mt-4 hidden"></div>
+
+      <!-- Produce Info -->
+      <div id="info" class="mt-6 hidden bg-gray-50 border rounded-lg p-5"></div>
+
+      <!-- Trace History -->
+      <div id="history" class="mt-6 hidden">
+        <h3 class="text-lg font-semibold mb-3">📜 Trace History</h3>
+        <ul id="historyList" class="space-y-2"></ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-4 mt-12 border-t">
+    <p class="text-sm text-gray-500">© 2024 AgriTrace – Ensuring Transparent Supply Chains</p>
+  </footer>
+
+  <script>
+    let contract;
+
+    async function initContract() {
+      // Load ABI + address
+      const data = await fetch("contractData.json").then(r => r.json());
+      const provider = new ethers.ethers.JsonRpcProvider("http://127.0.0.1:8545");
+      contract = new ethers.ethers.Contract(data.address, data.abi, provider);
+    }
+
+    async function viewProduce() {
+      const id = document.getElementById("prodId").value.trim();
+      const alertBox = document.getElementById("alertBox");
+      const infoBox = document.getElementById("info");
+      const historyBox = document.getElementById("history");
+      const historyList = document.getElementById("historyList");
+      const btn = document.getElementById("viewBtn");
+
+      alertBox.classList.add("hidden");
+      infoBox.classList.add("hidden");
+      historyBox.classList.add("hidden");
+      btn.disabled = true;
+      btn.innerText = "Loading...";
+
+      try {
+        const prod = await contract.produces(id);
+
+        if (!prod || prod.id.toString() === "0") {
+          throw new Error("Produce not found.");
+        }
+
+        // Show success alert
+        alertBox.className = "mt-4 p-3 rounded-lg bg-green-100 text-green-800";
+        alertBox.innerText = `✅ Produce ID ${id} loaded successfully`;
+        alertBox.classList.remove("hidden");
+
+        // Show produce info
+        infoBox.innerHTML = `
+          <p><b>ID:</b> ${prod.id}</p>
+          <p><b>Name:</b> ${prod.name}</p>
+          <p><b>Origin:</b> ${prod.origin}</p>
+          <p><b>Current Owner:</b> ${prod.currentOwner}</p>
+          <p><b>Timestamp:</b> ${new Date(Number(prod.timestamp) * 1000).toLocaleString()}</p>
+        `;
+        infoBox.classList.remove("hidden");
+
+        // Fetch trace history if available
+        if (contract.getOwnershipHistory) {
+          const history = await contract.getOwnershipHistory(id);
+          historyList.innerHTML = "";
+          history.forEach((entry, i) => {
+            const li = document.createElement("li");
+            li.className = "p-2 bg-white border rounded shadow-sm";
+            li.innerHTML = `#${i+1} – Owner: <b>${entry.owner}</b> at ${new Date(Number(entry.timestamp) * 1000).toLocaleString()}`;
+            historyList.appendChild(li);
+          });
+          historyBox.classList.remove("hidden");
+        }
+
+      } catch (err) {
+        alertBox.className = "mt-4 p-3 rounded-lg bg-red-100 text-red-800";
+        alertBox.innerText = "❌ Error: " + (err.reason || err.message);
+        alertBox.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "View Produce";
+      }
+    }
+
+    initContract();
+  </script>
+</body>
+</html>

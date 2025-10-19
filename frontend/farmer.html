@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer - AgriTrace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans" onload="initContract()">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://img.icons8.com/fluency/48/plant-under-sun.png" alt="logo" class="w-7 h-7">
+      <span class="font-bold text-xl text-green-700">AgriTrace</span>
+    </div>
+    <div class="space-x-6 text-gray-700">
+      <a href="#" class="hover:text-green-600">Dashboard</a>
+      <a href="#" class="hover:text-green-600">My Farm</a>
+      <a href="#" class="hover:text-green-600">Analytics</a>
+      <a href="#" class="hover:text-green-600">Profile</a>
+    </div>
+    <button class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800">Logout</button>
+  </nav>
+
+  <!-- Form Section -->
+  <main class="max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-xl p-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Register Your Produce</h2>
+    <p class="text-gray-500 mb-6">Enter the details of your latest harvest to add it to the AgriTrace system.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Produce ID -->
+      <div>
+        <label for="regId" class="block text-sm font-medium text-gray-700">Produce ID</label>
+        <input id="regId" placeholder="e.g., 101" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-green-600 focus:border-green-600" />
+      </div>
+
+      <!-- Produce Name -->
+      <div>
+        <label for="regName" class="block text-sm font-medium text-gray-700">Produce Name</label>
+        <input id="regName" placeholder="e.g., Organic Tomatoes" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-green-600 focus:border-green-600" />
+      </div>
+
+      <!-- Origin -->
+      <div>
+        <label for="regOrigin" class="block text-sm font-medium text-gray-700">Origin</label>
+        <input id="regOrigin" placeholder="e.g., Punjab Village #3" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-green-600 focus:border-green-600" />
+      </div>
+
+      <!-- Owner Name -->
+      <div>
+        <label for="regOwner" class="block text-sm font-medium text-gray-700">Owner Name</label>
+        <input id="regOwner" placeholder="e.g., Ramesh Kumar" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-green-600 focus:border-green-600" />
+      </div>
+    </div>
+
+    <!-- Register Button -->
+    <div class="mt-6 flex justify-end">
+      <button onclick="registerProduce()" class="bg-green-700 text-white px-6 py-2 rounded-lg shadow hover:bg-green-800 transition">
+        Register Produce
+      </button>
+    </div>
+
+    <!-- Status Alert -->
+    <div id="statusMsg" class="mt-4"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-10 bg-gray-900 text-gray-400 text-center py-6 text-sm">
+    <p>© 2024 AgriTrace — Cultivating the Future of Agriculture.</p>
+    <div class="mt-2 space-x-4">
+      <a href="#" class="hover:text-white">Twitter</a>
+      <a href="#" class="hover:text-white">LinkedIn</a>
+      <a href="#" class="hover:text-white">Instagram</a>
+    </div>
+  </footer>
+
+  <!-- Blockchain Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js"></script>
+  <script src="contract.js"></script>
+  <script>
+    async function registerProduce() {
+      const id = document.getElementById("regId").value;
+      const name = document.getElementById("regName").value;
+      const origin = document.getElementById("regOrigin").value;
+      const owner = document.getElementById("regOwner").value;
+
+      try {
+        const tx = await contract.registerProduce(id, name, origin, owner);
+        await tx.wait();
+        document.getElementById("statusMsg").innerHTML = 
+          `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+            ✅ Success! Produce '${name}' registered with ID ${id}.
+          </div>`;
+      } catch (err) {
+        document.getElementById("statusMsg").innerHTML =
+          `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            ❌ Error: ${err.reason || err.message}
+          </div>`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distributor - AgriTrace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col" onload="initContract()">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://img.icons8.com/fluency/48/box.png" alt="logo" class="w-7 h-7">
+      <span class="font-bold text-xl text-green-700">AgriTrace</span>
+    </div>
+    <div class="space-x-6 text-gray-700">
+      <a href="#" class="hover:text-green-600">Dashboard</a>
+      <a href="#" class="hover:text-green-600">My Transfers</a>
+      <a href="#" class="hover:text-green-600">Analytics</a>
+      <a href="#" class="hover:text-green-600">Profile</a>
+    </div>
+    <button class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800">Logout</button>
+  </nav>
+
+  <!-- Main Section -->
+  <main class="flex-grow flex items-center justify-center">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-xl p-8 mt-10">
+      <div class="flex items-center space-x-2 mb-4">
+        <img src="https://img.icons8.com/color/48/parcel.png" class="w-7 h-7" />
+        <h2 class="text-2xl font-bold text-gray-800">Transfer Ownership</h2>
+      </div>
+      <p class="text-gray-500 mb-6 text-sm">Move produce ownership from Farmer to Distributor using the AgriTrace blockchain.</p>
+
+      <!-- Form -->
+      <div class="space-y-4">
+        <div>
+          <label for="prodId" class="block text-sm font-medium text-gray-700">Produce ID</label>
+          <input id="prodId" placeholder="e.g., 101" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-green-600 focus:border-green-600" />
+        </div>
+        <div>
+          <label for="newOwner" class="block text-sm font-medium text-gray-700">Distributor Name</label>
+          <input id="newOwner" placeholder="e.g., FreshFoods Pvt Ltd" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-green-600 focus:border-green-600" />
+        </div>
+      </div>
+
+      <!-- Button -->
+      <button onclick="transfer()" class="mt-6 w-full bg-green-700 text-white py-2 rounded-lg shadow hover:bg-green-800 transition">
+        Transfer Ownership
+      </button>
+
+      <!-- Status Messages -->
+      <div id="statusMsg" class="mt-4"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm">
+    <p>© 2024 AgriTrace — Ensuring Transparent Supply Chains.</p>
+    <div class="mt-2 space-x-4">
+      <a href="#" class="hover:text-white">Twitter</a>
+      <a href="#" class="hover:text-white">LinkedIn</a>
+      <a href="#" class="hover:text-white">Instagram</a>
+    </div>
+  </footer>
+
+  <!-- Blockchain Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js"></script>
+  <script src="contract.js"></script>
+  <script>
+    async function transfer() {
+      const id = document.getElementById("prodId").value;
+      const newOwner = document.getElementById("newOwner").value;
+
+      try {
+        const tx = await contract.transferOwnership(id, newOwner);
+        await tx.wait();
+        document.getElementById("statusMsg").innerHTML = 
+          `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+            ✅ Success! Ownership has been transferred.
+          </div>`;
+      } catch (err) {
+        document.getElementById("statusMsg").innerHTML =
+          `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            ❌ Error! Could not transfer ownership. Please check the details.<br>${err.reason || err.message}
+          </div>`;
+      }
+    }
+  </script>
+</body>
+</html>

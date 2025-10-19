@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroTrace - Role Gateway</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        /* Base styles */
+        :root {
+            --color-primary: #10B981;
+            --color-primary-dark: #059669;
+            --color-primary-rgb: 16, 185, 129;
+            --text-color: #1F2937;
+            --text-color-light: #6B7280;
+            --card-bg: #FFFFFF;
+            --input-bg: #F9FAFB;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+   
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+            width: 100%;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+        
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .login-logo img {
+            height: 48px;
+            margin-right: 0.5rem;
+            animation: bounceIn 1s ease-out;
+        }
+        
+        .login-logo span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        .login-tagline {
+            font-size: 1.1rem;
+            color: var(--text-color-light);
+            margin-bottom: 2rem;
+        }
+        
+        .login-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .login-form-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            animation: fadeInLeft 0.8s ease-out 0.4s both;
+        }
+        
+        .login-form-container:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+        
+        .form-group:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+        
+        .form-group:nth-child(3) {
+            animation-delay: 0.8s;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+            outline: none;
+            transform: translateY(-2px);
+        }
+        
+        .btn-login {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out 0.9s both;
+        }
+        
+        .btn-login:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .btn-loading .btn-text {
+            visibility: hidden;
+            opacity: 0;
+        }
+        
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 3px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+        
+        @keyframes button-loading-spinner {
+            from { transform: rotate(0turn); }
+            to { transform: rotate(1turn); }
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+        
+        .role-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+        
+        .role-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .role-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(var(--color-primary-rgb), 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .role-option:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .role-option:hover::before {
+            opacity: 1;
+        }
+        
+        .role-option.active {
+            border-color: var(--color-primary);
+            background: rgba(var(--color-primary-rgb), 0.1);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+            animation: pulse 0.5s ease;
+        }
+        
+        .role-option i {
+            display: block;
+            margin: 0 auto 0.5rem;
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .role-option:hover i {
+            animation: float 1.5s ease infinite;
+        }
+        
+        .role-option span {
+            display: block;
+            font-weight: 500;
+        }
+        
+        .quick-actions {
+            margin-top: 0;
+            animation: fadeInRight 0.8s ease-out 0.4s both;
+        }
+        
+        .quick-actions h3 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .action-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .action-card:hover::before {
+            opacity: 1;
+        }
+        
+        .action-card-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: rgba(var(--color-primary-rgb), 0.1);
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .action-card:hover .action-card-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+        
+        .action-card h4 {
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .action-card:hover h4 {
+            color: var(--color-primary);
+        }
+        
+        .action-card p {
+            color: var(--text-color-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .action-card-footer span {
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+        }
+        
+        .action-card-footer i {
+            color: var(--color-primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .action-card:hover .action-card-footer i {
+            transform: translateX(5px);
+        }
+        
+        .welcome-back {
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+        
+        .welcome-back h2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-back p {
+            color: var(--text-color-light);
+        }
+        
+        .recent-activity {
+            margin-top: 3rem;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+        
+        .recent-activity h3 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .activity-list {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .activity-list:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .activity-item:hover {
+            background-color: rgba(var(--color-primary-rgb), 0.05);
+            transform: translateX(5px);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            margin-right: 1rem;
+            background: rgba(var(--color-primary-rgb), 0.1);
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover .activity-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-content h4 {
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+        
+        .activity-content p {
+            color: var(--text-color-light);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+        }
+        
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @media (min-width: 768px) {
+            .login-grid {
+                grid-template-columns: 1fr 1fr;
+                align-items: start;
+            }
+            
+            .quick-actions {
+                margin-top: 0;
+            }
+            
+            .activity-item {
+                animation-duration: 0.8s;
+            }
+            
+            .activity-item:nth-child(1) { animation-delay: 0.6s; }
+            .activity-item:nth-child(2) { animation-delay: 0.7s; }
+            .activity-item:nth-child(3) { animation-delay: 0.8s; }
+            .activity-item:nth-child(4) { animation-delay: 0.9s; }
+        }
+        
+        @media (max-width: 767px) {
+            .role-selector {
+                flex-direction: column;
+            }
+            
+            .role-option {
+                min-width: auto;
+            }
+        }
+        
+        /* Footer styles */
+        .app-footer {
+            margin-top: 4rem;
+            padding: 3rem 0 2rem;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-img {
+            height: 32px;
+            margin-right: 0.5rem;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        .footer-tagline {
+            color: var(--text-color-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(var(--color-primary-rgb), 0.1);
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: var(--color-primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-color-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-primary);
+            padding-left: 5px;
+        }
+        
+        .footer-contact {
+            list-style: none;
+        }
+        
+        .footer-contact li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: var(--text-color-light);
+        }
+        
+        .footer-contact i {
+            margin-right: 0.5rem;
+            color: var(--color-primary);
+        }
+        
+        .footer-bottom {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .copyright {
+            color: var(--text-color-light);
+        }
+        
+        .footer-bottom-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-bottom-links a {
+            color: var(--text-color-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-bottom-links a:hover {
+            color: var(--color-primary);
+        }
+        
+        /* Animation classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .slide-in-left {
+            animation: fadeInLeft 1s ease forwards;
+        }
+        
+        .slide-in-right {
+            animation: fadeInRight 1s ease forwards;
+        }
+        
+        .slide-in-up {
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        /* Quick actions transition */
+        .quick-action-transition {
+            transition: all 0.5s ease;
+        }
+        
+        /* Shake animation for form validation */
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="welcome-back">
+            <h2>Welcome to AgroTrace</h2>
+            <p>Select your role to access the platform</p>  
+        </div>
+        
+        <div class="login-grid">
+            <div class="login-form-container">
+                <div class="login-form">
+                    <h3>Sign In</h3>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Your Role</label>
+                            <div class="role-selector">
+                                <div class="role-option" data-role="consumer">
+                                    <i data-feather="shopping-bag"></i>
+                                    <span>Consumer</span>
+                                </div>
+                                <div class="role-option" data-role="retailer">
+                                    <i data-feather="shopping-cart"></i>
+                                    <span>Retailer</span>
+                                </div>
+                                <div class="role-option" data-role="distributor">
+                                    <i data-feather="truck"></i>
+                                    <span>Distributor</span>
+                                </div>
+                                <div class="role-option" data-role="farmer">
+                                    <i data-feather="sun"></i>
+                                    <span>Farmer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-login">
+                            <span class="btn-text">Sign In</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-cards" id="quick-actions-container">
+                    <!-- Quick action cards will be dynamically inserted based on selected role -->
+                    <div class="action-card">
+                        <div class="action-card-icon">
+                            <i data-feather="info"></i>
+                        </div>
+                        <h4>Select a role</h4>
+                        <p>Choose your role from the options on the left to see relevant quick actions</p>
+                        <div class="action-card-footer">
+                            <span>Get started</span>
+                            <i data-feather="arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Feather Icons
+            feather.replace();
+            
+            // Add animation classes to sections
+            document.querySelectorAll('.role-option').forEach(option => {
+                option.classList.add('animate-on-scroll');
+                option.dataset.animation = 'fade-in';
+            });
+            
+            // Set up role selection
+            setupRoleSelection();
+            
+            // Set up login form
+            setupLoginForm();
+            
+            // Set up scroll animations
+            setupScrollAnimations();
+            
+            // Set up ripple effects for buttons
+            setupRippleEffects();
+        });
+        
+        // Set up role selection
+        function setupRoleSelection() {
+            const roleOptions = document.querySelectorAll('.role-option');
+            const quickActionsContainer = document.getElementById('quick-actions-container');
+            
+            // Check for role in URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const roleParam = urlParams.get('role');
+            
+            if (roleParam) {
+                // Find and activate the role option that matches the URL param
+                roleOptions.forEach(option => {
+                    if (option.dataset.role === roleParam) {
+                        selectRole(option);
+                    }
+                });
+            }
+            
+            // Add click event to role options
+            roleOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    selectRole(option);
+                });
+            });
+            
+            function selectRole(selectedOption) {
+                // Remove active class from all options
+                roleOptions.forEach(option => option.classList.remove('active'));
+                
+                // Add active class to selected option
+                selectedOption.classList.add('active');
+                
+                // Add animation to selected role
+                selectedOption.style.animation = 'pulse 0.5s ease';
+                
+                // Update quick actions based on selected role
+                updateQuickActions(selectedOption.dataset.role);
+            }
+            
+            function updateQuickActions(role) {
+                // Add transition class for smooth animation
+                quickActionsContainer.classList.add('quick-action-transition');
+                quickActionsContainer.style.opacity = '0';
+                quickActionsContainer.style.transform = 'translateY(20px)';
+                
+                // Wait for fade out before updating content
+                setTimeout(() => {
+                    // Clear existing quick actions
+                    quickActionsContainer.innerHTML = '';
+                    
+                    // Define quick actions for each role
+                    const quickActions = {
+                        consumer: [
+                            { icon: 'search', title: 'Scan Product', description: 'Scan a QR code to verify product authenticity', time: 'Takes ~10 seconds' },
+                            { icon: 'clock', title: 'View Price History', description: 'Check price trends for agricultural products', time: 'Updated hourly' },
+                            { icon: 'file-text', title: 'View Certificates', description: 'Access product certifications and quality tests', time: 'Verified by blockchain' },
+                            { icon: 'message-square', title: 'Submit Feedback', description: 'Share your experience with products', time: 'Help improve the system' }
+                        ],
+                        retailer: [
+                            { icon: 'package', title: 'Manage Stock', description: 'View and update your current inventory', time: 'Last updated 5 mins ago' },
+                            { icon: 'check-circle', title: 'Verify Products', description: 'Check authenticity of received products', time: 'Blockchain verified' },
+                            { icon: 'edit', title: 'Record Sales', description: 'Log new sales transactions', time: 'Real-time updates' },
+                            { icon: 'share-2', title: 'Generate QR Codes', description: 'Create QR codes for customer verification', time: 'Instant generation' }
+                        ],
+                        distributor: [
+                            { icon: 'database', title: 'Inventory Overview', description: 'Check current stock and pending transfers', time: '125 items in stock' },
+                            { icon: 'send', title: 'Transfer Records', description: 'Record product transfers to retailers', time: 'Blockchain secured' },
+                            { icon: 'bar-chart-2', title: 'View Analytics', description: 'See distribution metrics and insights', time: 'Updated daily' },
+                            { icon: 'file', title: 'Manage Receipts', description: 'Access and generate transfer receipts', time: '24 new receipts' }
+                        ],
+                        farmer: [
+                            { icon: 'upload', title: 'Register Harvest', description: 'Log new harvest batches in the system', time: 'Start of supply chain' },
+                            { icon: 'award', title: 'Manage Certifications', description: 'Update and view your certifications', time: '3 active certifications' },
+                            { icon: 'truck', title: 'Schedule Pickup', description: 'Arrange product pickup by distributors', time: 'Next available: Tomorrow' },
+                            { icon: 'trending-up', title: 'View Market Prices', description: 'Check current market rates for your products', time: 'Updated hourly' }
+                        ]
+                    };
+                    
+                    // Add quick action cards for the selected role
+                    if (quickActions[role]) {
+                        quickActions[role].forEach((action, index) => {
+                            const card = document.createElement('div');
+                            card.className = 'action-card';
+                            card.style.animationDelay = `${index * 0.1}s`;
+                            card.innerHTML = `
+                                <div class="action-card-icon">
+                                    <i data-feather="${action.icon}"></i>
+                                </div>
+                                <h4>${action.title}</h4>
+                                <p>${action.description}</p>
+                                <div class="action-card-footer">
+                                    <span>${action.time}</span>
+                                    <i data-feather="arrow-right"></i>
+                                </div>
+                            `;
+                            
+                            // Add click event to redirect to the appropriate page
+                            card.addEventListener('click', () => {
+                                window.location.href = `${role}.html`;
+                            });
+                            
+                            quickActionsContainer.appendChild(card);
+                        });
+                        
+                        // Re-initialize Feather icons for the new elements
+                        feather.replace();
+                    } else {
+                        // Show default card if no role is selected
+                        quickActionsContainer.innerHTML = `
+                            <div class="action-card">
+                                <div class="action-card-icon">
+                                    <i data-feather="info"></i>
+                                </div>
+                                <h4>Select a role</h4>
+                                <p>Choose your role from the options on the left to see relevant quick actions</p>
+                                <div class="action-card-footer">
+                                    <span>Get started</span>
+                                    <i data-feather="arrow-right"></i>
+                                </div>
+                            </div>
+                        `;
+                        feather.replace();
+                    }
+                    
+                    // Fade in the new content
+                    setTimeout(() => {
+                        quickActionsContainer.style.opacity = '1';
+                        quickActionsContainer.style.transform = 'translateY(0)';
+                    }, 50);
+                    
+                    // Remove transition class after animation completes
+                    setTimeout(() => {
+                        quickActionsContainer.classList.remove('quick-action-transition');
+                    }, 500);
+                }, 300);
+            }
+        }
+        
+        // Set up login form
+        function setupLoginForm() {
+            const loginForm = document.getElementById('login-form');
+            const loginButton = loginForm.querySelector('.btn-login');
+            const btnText = loginButton.querySelector('.btn-text');
+            
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form values
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    // Get selected role
+                    const selectedRole = document.querySelector('.role-option.active');
+                    
+                    if (!selectedRole) {
+                        // Shake the role selector if no role is selected
+                        const roleSelector = document.querySelector('.role-selector');
+                        roleSelector.classList.add('shake');
+                        setTimeout(() => {
+                            roleSelector.classList.remove('shake');
+                        }, 500);
+                        
+                        alert('Please select a role to continue');
+                        return;
+                    }
+                    
+                    const role = selectedRole.dataset.role;
+                    
+                    // Show loading state
+                    loginButton.classList.add('btn-loading');
+                    
+                    // In a real application, you would perform authentication here
+                    // For this demo, we'll simulate a network request
+                    setTimeout(() => {
+                        // Remove loading state
+                        loginButton.classList.remove('btn-loading');
+                        
+                        // Redirect to the appropriate page
+                        window.location.href = `${role}.html`;
+                    }, 1500);
+                });
+            }
+        }
+        
+        // Set up scroll animations
+        function setupScrollAnimations() {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            
+            // Create Intersection Observer to detect when elements are in view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            // Observe all animated elements
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+        
+        // Set up ripple effects for buttons
+        function setupRippleEffects() {
+            const buttons = document.querySelectorAll('.btn-login, .role-option, .action-card');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Create ripple element
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    
+                    // Get position of click
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    // Set styles for ripple
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    // Add ripple to button
+                    this.appendChild(ripple);
+                    
+                    // Remove ripple after animation completes
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
