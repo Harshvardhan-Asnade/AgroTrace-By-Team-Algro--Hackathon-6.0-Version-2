@@ -6,7 +6,7 @@
 ![Blockchain](https://img.shields.io/badge/Blockchain-Ethereum%20%7C%20Hardhat%20%7C%20MetaMask-purple.svg)
 ![Hackathon](https://img.shields.io/badge/Event-Hackathon%206.0%20Version%20-orange.svg)
 
-Documentation - https://docs.google.com/document/d/1HE99jMUrNg39NhvZCS5nE1CZdynLnT3b7KTrm1Jc7-U/edit?usp=sharing
+Documentation - https://devdoc-eta.vercel.app/#agrotrace
 ---
 
 ## 🌍 **Overview**
